@@ -1,5 +1,5 @@
 import * as R from 'ramda';
-import { start, addFlag, removeFlag, flag } from './game';
+import { start, addFlag, removeFlag, flag, sweep } from './game';
 
 const getInitialRow = (width = 8) => [...new Array(width)].map(() => false);
 const getInitialMineField = (width = 8, height = 8) =>
@@ -60,7 +60,7 @@ describe('Game', () => {
     expect(mines).toEqual(9);
   });
 
-  test('adds or remove a flag', () => {
+  test('adds or removes a flag', () => {
     const [field, mines] = R.pipe(flag(5, 5), flag(1, 2), flag(3, 3), flag(5, 5))(start());
 
     expect(field[5][5]).toEqual(false);
@@ -68,4 +68,53 @@ describe('Game', () => {
     expect(field[3][3]).toEqual('flag');
     expect(mines).toEqual(8);
   });
+
+  test('sweep an empty tile', () => {
+    const minesMap = [
+      [1, 0, 0, 0, 0, 0, 1, 0],
+      [0, 0, 0, 0, 0, 1, 0, 0],
+      [0, 1, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 1, 0],
+      [1, 0, 0, 0, 0, 0, 0, 0],
+      [0, 1, 0, 0, 0, 0, 0, 1],
+      [0, 0, 0, 0, 1, 1, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+    ];
+    const [field] = R.pipe(sweep(3, 4))(start({ width: 8, height: 8, mines: 10, minesMap }));
+    expect(field[4][3]).toEqual(0);
+  });
+
+  test('swipe a small mineField', () => {
+    const mineField = [
+      [false, false, false],
+      [false, false, false],
+      [false, false, false],
+    ];
+    const minesMap = [
+      [0, 0, 1],
+      [0, 0, 0],
+      [0, 0, 1],
+    ];
+    const [field] = R.pipe(sweep(0, 0))(start({ width: 3, height: 3, mines: 2, minesMap }));
+    expect(field).toEqual([
+      [0, 1, false],
+      [0, 2, false],
+      [0, 1, false],
+    ]);
+  });
+
+  // test('when sweeping an empty tile, it reveals all the tiles which do not touch a mine', () => {
+  //   const minesMap = [
+  //     [1, 0, 0, 0, 0, 0, 1, 0],
+  //     [0, 0, 0, 0, 0, 1, 0, 0],
+  //     [0, 1, 0, 0, 0, 0, 0, 0],
+  //     [0, 0, 0, 0, 0, 0, 1, 0],
+  //     [1, 0, 0, 0, 0, 0, 0, 0],
+  //     [0, 1, 0, 0, 0, 0, 0, 1],
+  //     [0, 0, 0, 0, 1, 1, 0, 0],
+  //     [0, 0, 0, 0, 0, 0, 0, 0],
+  //   ];
+  //   const [field] = R.pipe(sweep(3, 4))(start({ width: 8, height: 8, mines: 10, minesMap }));
+  //   expect(field[4][3]).toEqual(0);
+  // });
 });
