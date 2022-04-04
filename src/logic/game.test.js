@@ -69,22 +69,22 @@ describe('Game', () => {
     expect(mines).toEqual(8);
   });
 
-  test('sweep an empty tile', () => {
-    const minesMap = [
-      [1, 0, 0, 0, 0, 0, 1, 0],
-      [0, 0, 0, 0, 0, 1, 0, 0],
-      [0, 1, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 1, 0],
-      [1, 0, 0, 0, 0, 0, 0, 0],
-      [0, 1, 0, 0, 0, 0, 0, 1],
-      [0, 0, 0, 0, 1, 1, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-    ];
-    const [field] = R.pipe(sweep(3, 4))(start({ width: 8, height: 8, mines: 10, minesMap }));
-    expect(field[4][3]).toEqual(0);
-  });
+  // test('sweep an empty tile', () => {
+  //   const minesMap = [
+  //     [1, 0, 0, 0, 0, 0, 1, 0],
+  //     [0, 0, 0, 0, 0, 1, 0, 0],
+  //     [0, 1, 0, 0, 0, 0, 0, 0],
+  //     [0, 0, 0, 0, 0, 0, 1, 0],
+  //     [1, 0, 0, 0, 0, 0, 0, 0],
+  //     [0, 1, 0, 0, 0, 0, 0, 1],
+  //     [0, 0, 0, 0, 1, 1, 0, 0],
+  //     [0, 0, 0, 0, 0, 0, 0, 0],
+  //   ];
+  //   const [field] = R.pipe(sweep(3, 4))(start({ width: 8, height: 8, mines: 10, minesMap }));
+  //   expect(field[4][3]).toEqual(0);
+  // });
 
-  test('swipe a small mineField', () => {
+  test('add 0 if there are no mines nearby', () => {
     const mineField = [
       [false, false, false],
       [false, false, false],
@@ -95,12 +95,77 @@ describe('Game', () => {
       [0, 0, 0],
       [0, 0, 1],
     ];
-    const [field] = R.pipe(sweep(0, 0))(start({ width: 3, height: 3, mines: 2, minesMap }));
+
+    const [field] = R.pipe(sweep(0, 1))(start({ width: 3, height: 3, mines: 2, minesMap }));
+    expect(field[1][0]).toEqual(0);
+  });
+
+  test('add 1 if there is a mine nearby', () => {
+    const mineField = [
+      [false, false, false],
+      [false, false, false],
+      [false, false, false],
+    ];
+    const minesMap = [
+      [0, 0, 1],
+      [0, 0, 0],
+      [0, 0, 1],
+    ];
+
+    const [field] = R.pipe(sweep(1, 0))(start({ width: 3, height: 3, mines: 2, minesMap }));
+    expect(field[0][1]).toEqual(1);
+  });
+
+  test('add 2 if there are two mine nearby', () => {
+    const mineField = [
+      [false, false, false],
+      [false, false, false],
+      [false, false, false],
+    ];
+    const minesMap = [
+      [0, 0, 1],
+      [0, 0, 0],
+      [0, 0, 1],
+    ];
+
+    const [field] = R.pipe(sweep(1, 1))(start({ width: 3, height: 3, mines: 2, minesMap }));
+    expect(field[1][1]).toEqual(2);
+  });
+
+  test('swipe a small mineField', () => {
+    const minesMap = [
+      [0, 0, 1],
+      [0, 0, 0],
+      [0, 0, 1],
+    ];
+    const [field] = R.pipe(sweep(0, 1))(start({ width: 3, height: 3, mines: 2, minesMap }));
+
+    expect(field[1][0]).toEqual(0);
     expect(field).toEqual([
       [0, 1, false],
       [0, 2, false],
       [0, 1, false],
     ]);
+  });
+
+  test('swipe a bigger mineField', () => {
+    const minesMap = [
+      [0, 0, 1, 0],
+      [0, 1, 0, 0],
+      [1, 0, 1, 0],
+      [0, 0, 1, 0],
+    ];
+    const [field] = R.pipe(sweep(0, 0))(start({ width: 4, height: 4, mines: 5, minesMap }));
+
+    // console.log(field);
+
+    expect(field[0][0]).toEqual(1);
+    expect(field[1][0]).toEqual(2);
+    // expect(field).toEqual([
+    //   [0, 1, false],
+    //   [0, 2, false],
+    //   [0, 1, false],
+    // ]);
   });
 
   // test('when sweeping an empty tile, it reveals all the tiles which do not touch a mine', () => {

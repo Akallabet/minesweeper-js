@@ -16,7 +16,7 @@ const mapDefaultArgs = ({ width = 8, height = 8, mines = 10, minesMap } = defaul
 const createEmptyField = ({ width = 8, height = 8 }) =>
   R.map(() => R.map(() => false, [...new Array(width)]), [...new Array(height)]);
 
-const checkField = R.curryN(4)((arg, x, y, field) => field[y][x] === arg);
+const checkField = R.curryN(4)((arg, x, y, field) => field[y] && field[y][x] === arg);
 
 const checkMines = R.curryN(4)((arg, x, y, [_, __, minesMap]) => checkField(arg, x, y, minesMap));
 const checkTile = R.curryN(4)((arg, x, y, [field]) => field[y][x] === arg);
@@ -66,11 +66,44 @@ export const start = R.pipe(
   ]
 );
 
-const sweepTile = (field, minesMap, x, y) => {
-  // if (minesMap[x+1][y]) updateTile(0, x, y, field);
-  if (checkField(1, x, y, minesMap)) return updateTile(true, x, y, field);
-  if (checkField(0, x, y, minesMap)) return updateTile(0, x, y, field);
-  // sweepTile(updateTile(1, x, y, field), minesMap, x, y)
+const getNeighbours = (x, y) => [
+  [y - 1, x],
+  [y - 1, x + 1],
+  [y, x + 1],
+  [y + 1, x + 1],
+  [y + 1, x],
+  [y + 1, x - 1],
+  [y, x - 1],
+  [y - 1, x - 1],
+];
+const calcNeighbouringMines = (minesMap) =>
+  R.pipe(
+    getNeighbours,
+    R.map(([y, x]) => checkField(1, x, y, minesMap)),
+    R.reduce((mines, isMine) => (isMine ? increase(mines) : mines), 0)
+  );
+
+const getEmptyNeighbours = (minesMap) =>
+  R.pipe(
+    getNeighbours,
+    R.filter(([y, x]) => checkField(0, x, y, minesMap))
+  );
+
+const sweepTile = (field, minesMap, [current, ...neighbours] = []) => {
+  if (!current) return field;
+  const [y, x] = current;
+  if (!minesMap[y] || minesMap[y][x] === undefined) sweepTile(field, minesMap, neighbours);
+  // console.log({ y, x });
+  if (checkField(0, x, y, minesMap)) {
+    // console.log(minesMap[y][x]);
+    // console.log(getEmptyNeighbours(minesMap)(x, y));
+    return sweepTile(
+      updateTile(calcNeighbouringMines(minesMap)(x, y), x, y, field),
+      minesMap,
+      // getEmptyNeighbours(minesMap)(x, y),
+      neighbours
+    );
+  }
 
   return field;
 };
@@ -78,7 +111,7 @@ const sweepTile = (field, minesMap, x, y) => {
 const startSweep =
   (x, y) =>
   ([field, mines, minesMap]) =>
-    [sweepTile(field, minesMap, x, y), mines, minesMap];
+    [sweepTile(field, minesMap, [[y, x], ...getNeighbours(x, y)]), mines, minesMap];
 
 export const sweep = (x, y) =>
   R.cond([
