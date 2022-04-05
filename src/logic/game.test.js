@@ -1,5 +1,5 @@
 import * as R from 'ramda';
-import { start, addFlag, removeFlag, flag, sweep } from './game';
+import { start, flag, sweep } from './game';
 
 const getInitialRow = (width = 8) => [...new Array(width)].map(() => false);
 const getInitialMineField = (width = 8, height = 8) =>
@@ -29,7 +29,7 @@ describe('Game', () => {
   });
 
   test('it should flag an empty tile', () => {
-    const [field, mines] = addFlag(5, 5)(start());
+    const [field, mines] = flag(5, 5)(start());
 
     expect(field[5][5]).toEqual('flag');
     expect(field[0]).toEqual(getInitialRow());
@@ -37,27 +37,12 @@ describe('Game', () => {
   });
 
   test('it should remove a flag from a tile', () => {
-    const game = addFlag(5, 5)(start());
-    const [field, mines] = removeFlag(5, 5)(game);
+    const game = flag(5, 5)(start());
+    const [field, mines] = flag(5, 5)(game);
 
     expect(field[5][5]).toEqual(false);
     expect(field[0]).toEqual(getInitialRow());
     expect(mines).toEqual(10);
-  });
-
-  // test('it should not flag a non empty tile', () => {
-  //   const [field, mines] = R.pipe(addFlag(5, 5), addFlag(5, 5))(start());
-
-  //   expect(field[5][5]).toEqual('flag');
-  //   expect(mines).toEqual(9);
-  // });
-
-  test('it should not remove a flag if the tile does not contain a flag already', () => {
-    const [field, mines] = R.pipe(addFlag(5, 5), removeFlag(1, 2))(start());
-
-    expect(field[5][5]).toEqual('flag');
-    expect(field[2][1]).toEqual(false);
-    expect(mines).toEqual(9);
   });
 
   test('adds or removes a flag', () => {
@@ -152,34 +137,25 @@ describe('Game', () => {
     const minesMap = [
       [0, 0, 1, 0],
       [0, 1, 0, 0],
-      [1, 0, 1, 0],
-      [0, 0, 1, 0],
+      [1, 0, 0, 0],
+      [0, 0, 0, 0],
     ];
-    const [field] = R.pipe(sweep(0, 0))(start({ width: 4, height: 4, mines: 5, minesMap }));
-
-    // console.log(field);
+    const [field] = R.pipe(
+      sweep(0, 0),
+      sweep(3, 2)
+    )(start({ width: 4, height: 4, mines: 5, minesMap }));
 
     expect(field[0][0]).toEqual(1);
-    expect(field[1][0]).toEqual(2);
-    // expect(field).toEqual([
-    //   [0, 1, false],
-    //   [0, 2, false],
-    //   [0, 1, false],
-    // ]);
+    expect(field[1][0]).toEqual(false);
+    expect(field[0][1]).toEqual(false);
+    expect(field[0][2]).toEqual(false);
+    expect(field[1][1]).toEqual(false);
   });
 
-  // test('when sweeping an empty tile, it reveals all the tiles which do not touch a mine', () => {
-  //   const minesMap = [
-  //     [1, 0, 0, 0, 0, 0, 1, 0],
-  //     [0, 0, 0, 0, 0, 1, 0, 0],
-  //     [0, 1, 0, 0, 0, 0, 0, 0],
-  //     [0, 0, 0, 0, 0, 0, 1, 0],
-  //     [1, 0, 0, 0, 0, 0, 0, 0],
-  //     [0, 1, 0, 0, 0, 0, 0, 1],
-  //     [0, 0, 0, 0, 1, 1, 0, 0],
-  //     [0, 0, 0, 0, 0, 0, 0, 0],
-  //   ];
-  //   const [field] = R.pipe(sweep(3, 4))(start({ width: 8, height: 8, mines: 10, minesMap }));
-  //   expect(field[4][3]).toEqual(0);
-  // });
+  test('it should not flag a tile that has been revealed', () => {
+    const minesMap = [...new Array(8)].map(() => [...new Array(8)].map(() => 0));
+    const [field, mines] = R.pipe(sweep(5, 5), flag(5, 5))(start({ minesMap }));
+
+    expect(field[5][5]).toEqual(0);
+  });
 });
