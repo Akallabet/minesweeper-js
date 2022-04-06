@@ -17,9 +17,8 @@ const createEmptyField = ({ width = 8, height = 8 }) =>
   R.map(() => R.map(() => false, [...new Array(width)]), [...new Array(height)]);
 
 const checkField = R.curryN(4)((arg, x, y, field) => field[y] && field[y][x] === arg);
-
-const checkMines = R.curryN(4)((arg, x, y, [_, __, minesMap]) => checkField(arg, x, y, minesMap));
-const checkTile = R.curryN(4)((arg, x, y, [field]) => field[y][x] === arg);
+const checkMines = R.curryN(4)((arg, x, y, { minesMap }) => checkField(arg, x, y, minesMap));
+const checkTile = R.curryN(4)((arg, x, y, { field }) => field[y][x] === arg);
 const updateRowTile = (arg, x, row) => mapI((tile, j) => (j === x ? arg : tile), row);
 const updateTile = R.curryN(4)((arg, x, y, field) =>
   mapI((row, i) => (i === y ? updateRowTile(arg, x, row) : row), field)
@@ -27,13 +26,11 @@ const updateTile = R.curryN(4)((arg, x, y, field) =>
 
 const removeFlagAndAddMine =
   (x, y) =>
-  ([field, mines]) =>
-    [updateTile(false, x, y)(field), increase(mines)];
+  ({ field, mines }) => ({ field: updateTile(false, x, y)(field), mines: increase(mines) });
 
 const addFlagAndRemoveMine =
   (x, y) =>
-  ([field, mines]) =>
-    [updateTile('flag', x, y, field), decrease(mines)];
+  ({ field, mines }) => ({ field: updateTile('flag', x, y, field), mines: decrease(mines) });
 
 const createMinesMap = () => [];
 
@@ -47,11 +44,11 @@ export const flag = (x, y) =>
 export const start = R.pipe(
   mapDefaultArgs,
   (args) => [createEmptyField(args), args],
-  ([minefield, { mines, minesMap }]) => [
-    minefield,
+  ([field, { mines, minesMap }]) => ({
+    field,
     mines,
-    minesMap || createMinesMap(minefield, mines),
-  ]
+    minesMap: minesMap || createMinesMap(field, mines),
+  })
 );
 
 const getNeighbourPositions = (x, y) => [
@@ -108,8 +105,7 @@ const sweepTile = (field, minesMap, y, x) => {
 
 const startSweep =
   (x, y) =>
-  ([field, mines, minesMap]) =>
-    [sweepTile(field, minesMap, y, x), mines, minesMap];
+  ({ field, mines, minesMap }) => ({ field: sweepTile(field, minesMap, y, x), mines, minesMap });
 
 export const sweep = (x, y) =>
   R.cond([
