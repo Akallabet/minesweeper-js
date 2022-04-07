@@ -13,8 +13,9 @@ const mapDefaultArgs = ({ width = 8, height = 8, mines = 10, minesMap } = defaul
   minesMap,
 });
 
-const createEmptyField = ({ width = 8, height = 8 }) =>
-  R.map(() => R.map(() => false, [...new Array(width)]), [...new Array(height)]);
+const createEmptyField = R.curry(({ width = 8, height = 8 }, value) =>
+  R.map(() => R.map(() => value, [...new Array(width)]), [...new Array(height)])
+);
 
 const checkField = R.curryN(4)((arg, x, y, field) => field[y] && field[y][x] === arg);
 const checkMines = R.curryN(4)((arg, x, y, { minesMap }) => checkField(arg, x, y, minesMap));
@@ -32,7 +33,17 @@ const addFlagAndRemoveMine =
   (x, y) =>
   ({ field, mines }) => ({ field: updateTile('flag', x, y, field), mines: decrease(mines) });
 
-const createMinesMap = () => [];
+const getRandomInt = (max) => Math.floor(Math.random() * max);
+
+const createMinesMap = (width, height, mines) => {
+  const minePositions = R.map(
+    () => [getRandomInt(height), getRandomInt(width)],
+    [...new Array(mines)]
+  );
+  const minesMap = createEmptyField({ width, height }, 0);
+  R.forEach(([y, x]) => (minesMap[y][x] = 1), minePositions);
+  return minesMap;
+};
 
 export const flag = (x, y) =>
   R.cond([
@@ -44,11 +55,13 @@ export const flag = (x, y) =>
 
 export const start = R.pipe(
   mapDefaultArgs,
-  (args) => [createEmptyField(args), args],
-  ([field, { mines, minesMap, ...rest }]) => ({
+  (args) => [createEmptyField(args, false), args],
+  ([field, { mines, minesMap, width, height, ...rest }]) => ({
     field,
     mines,
-    minesMap: minesMap || createMinesMap(field, mines),
+    width,
+    height,
+    minesMap: minesMap || createMinesMap(width, height, mines),
     ...rest,
   })
 );

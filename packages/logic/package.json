@@ -1,16 +1,11 @@
 {
-  "name": "ui",
+  "name": "logic",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.js",
+  "main": "src/game.js",
   "scripts": {
-    "test": "npm run test --workspace=logic",
-    "start": "npm run start --workspace=ui",
-    "build": "npm run build --workspace=ui"
+    "test": "jest --watch"
   },
-  "workspaces": [
-    "packages/*"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Akallabet/minesweeper-js.git"
@@ -37,5 +32,8 @@
     "eslint-plugin-react": "^7.29.4",
     "jest": "^27.5.1",
     "prettier": "^2.6.2"
+  },
+  "dependencies": {
+    "ramda": "^0.28.0"
   }
 }

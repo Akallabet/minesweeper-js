@@ -1,0 +1,20 @@
+.container {
+  padding: 20px;
+}
+.game {
+  background-color: silver;
+}
+
+.game .row {
+  display: flex;
+  flex-direction: row;
+}
+
+.game .row .tile {
+  width: 15px;
+  height: 15px;
+}
+
+.game .row button.tile {
+  padding: 0;
+}
