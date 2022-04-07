@@ -36,6 +36,7 @@ const createMinesMap = () => [];
 
 export const flag = (x, y) =>
   R.cond([
+    [R.propEq('isGameOver', true), R.identity],
     [checkTile(false, x, y), addFlagAndRemoveMine(x, y)],
     [checkTile('flag', x, y), removeFlagAndAddMine(x, y)],
     [R.always, R.identity],
@@ -44,10 +45,11 @@ export const flag = (x, y) =>
 export const start = R.pipe(
   mapDefaultArgs,
   (args) => [createEmptyField(args), args],
-  ([field, { mines, minesMap }]) => ({
+  ([field, { mines, minesMap, ...rest }]) => ({
     field,
     mines,
     minesMap: minesMap || createMinesMap(field, mines),
+    ...rest,
   })
 );
 
@@ -75,14 +77,14 @@ const getEmptyUncheckedNeighbours = (field, minesMap) =>
     R.filter(([y, x]) => checkField(0, x, y, minesMap))
   );
 
-const sweepTileRec = (field, minesMap, [current, ...neighbours] = []) => {
+const sweepTile = (field, minesMap, [current, ...neighbours] = []) => {
   if (!current) return field;
   const [y, x] = current;
-  if (!minesMap[y] || minesMap[y][x] === undefined) sweepTileRec(field, minesMap, neighbours);
+  if (!minesMap[y] || minesMap[y][x] === undefined) sweepTile(field, minesMap, neighbours);
 
   if (checkField(0, x, y, minesMap)) {
     const neighbouringMines = calcNeighbourMines(minesMap)(x, y);
-    return sweepTileRec(
+    return sweepTile(
       updateTile(neighbouringMines, x, y, field),
       minesMap,
       neighbouringMines === 0
@@ -90,25 +92,31 @@ const sweepTileRec = (field, minesMap, [current, ...neighbours] = []) => {
         : neighbours
     );
   }
-
   return field;
-};
-
-const sweepTile = (field, minesMap, y, x) => {
-  const neighbouringMines = calcNeighbourMines(minesMap)(x, y);
-  return sweepTileRec(
-    updateTile(neighbouringMines, x, y, field),
-    minesMap,
-    neighbouringMines === 0 ? getEmptyUncheckedNeighbours(field, minesMap)(x, y) : []
-  );
 };
 
 const startSweep =
   (x, y) =>
-  ({ field, mines, minesMap }) => ({ field: sweepTile(field, minesMap, y, x), mines, minesMap });
+  ({ field, mines, minesMap, ...rest }) => {
+    const neighbouringMines = calcNeighbourMines(minesMap)(x, y);
+    return {
+      field: sweepTile(
+        updateTile(neighbouringMines, x, y, field),
+        minesMap,
+        neighbouringMines === 0 ? getEmptyUncheckedNeighbours(field, minesMap)(x, y) : []
+      ),
+      mines,
+      minesMap,
+      ...rest,
+    };
+  };
+
+const gameOver = (args) => ({ ...args, isGameOver: true });
 
 export const sweep = (x, y) =>
   R.cond([
+    [R.propEq('isGameOver', true), R.identity],
+    [checkMines(1, x, y), gameOver],
     [R.when(checkTile(false, x, y), checkMines(0, x, y)), startSweep(x, y)],
     [R.always, R.identity],
   ]);

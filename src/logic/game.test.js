@@ -129,4 +129,40 @@ describe('Game', () => {
     expect(field[5][5]).toEqual(0);
     expect(mines).toEqual(10);
   });
+
+  test('game over if it sweeps a mine', () => {
+    const minesMap = [
+      [0, 0, 1, 0],
+      [0, 1, 0, 0],
+      [1, 0, 0, 0],
+      [0, 0, 0, 0],
+    ];
+    const { isGameOver } = R.pipe(sweep(2, 0))(start({ width: 4, height: 4, mines: 5, minesMap }));
+    expect(isGameOver).toBe(true);
+  });
+
+  test('no flag actions allowed if the game is over', () => {
+    const minesMap = [
+      [0, 0, 1, 0],
+      [0, 1, 0, 0],
+      [1, 0, 0, 0],
+      [0, 0, 0, 0],
+    ];
+    const { field } = R.pipe(
+      sweep(2, 0),
+      flag(2, 0)
+    )(start({ width: 4, height: 4, mines: 5, minesMap }));
+    expect(field[0][2]).toBe(false);
+  });
+
+  test('no sweep actions allowed if the game is over', () => {
+    const minesMap = [
+      [0, 0, 1, 0],
+      [0, 1, 0, 0],
+      [1, 0, 0, 0],
+      [0, 0, 0, 0],
+    ];
+    const { field } = R.pipe(sweep(2, 0))(start({ width: 4, height: 4, mines: 5, minesMap }));
+    expect(field[0][2]).toBe(false);
+  });
 });
