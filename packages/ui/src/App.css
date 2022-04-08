@@ -1,7 +1,26 @@
+p {
+  margin: 0;
+  padding: 0;
+}
 .container {
   padding: 20px;
 }
-.game {
+.game .header {
+  display: flex;
+  margin-bottom: 10px;
+  justify-content: space-between;
+}
+
+.game-feedback {
+  height: 60px;
+}
+
+.game-feedback p {
+  padding: 0;
+  margin: 0;
+}
+
+.game .board {
   background-color: silver;
 }
 
@@ -15,6 +34,14 @@
   height: 15px;
 }
 
+.game .row p.tile {
+  font-size: small;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+}
+
 .game .row button.tile {
   padding: 0;
+  line-height: 12px;
 }
