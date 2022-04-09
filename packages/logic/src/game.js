@@ -27,11 +27,19 @@ const updateTile = R.curryN(4)((arg, x, y, field) =>
 
 const removeFlagAndAddMine =
   (x, y) =>
-  ({ field, mines }) => ({ field: updateTile(false, x, y)(field), mines: increase(mines) });
+  ({ field, mines, ...rest }) => ({
+    field: updateTile(false, x, y)(field),
+    mines: increase(mines),
+    ...rest,
+  });
 
 const addFlagAndRemoveMine =
   (x, y) =>
-  ({ field, mines }) => ({ field: updateTile('flag', x, y, field), mines: decrease(mines) });
+  ({ field, mines, ...rest }) => ({
+    field: updateTile('flag', x, y, field),
+    mines: decrease(mines),
+    ...rest,
+  });
 
 const getRandomInt = (max) => Math.floor(Math.random() * max);
 
@@ -48,6 +56,7 @@ const createMinesMap = (width, height, mines) => {
 export const flag = (x, y) =>
   R.cond([
     [R.propEq('isGameOver', true), R.identity],
+    [R.propEq('isWin', true), R.identity],
     [checkTile(false, x, y), addFlagAndRemoveMine(x, y)],
     [checkTile('flag', x, y), removeFlagAndAddMine(x, y)],
     [R.always, R.identity],
@@ -124,12 +133,23 @@ const startSweep =
     };
   };
 
-const gameOver = (args) => ({ ...args, isGameOver: true });
+const getIsGameOver = R.over(R.lensProp('isGameOver'), () => true);
+const isSweepable = (x, y) => (args) => checkTile(false, x, y, args) && checkMines(0, x, y, args);
+const getLengthOfEq = (arg, prop) =>
+  R.pipe(R.prop(prop), R.flatten, R.filter(R.equals(arg)), R.length);
+
+const getIsWin = (args) =>
+  getLengthOfEq(false, 'field')(args) === getLengthOfEq(1, 'minesMap')(args);
 
 export const sweep = (x, y) =>
-  R.cond([
-    [R.propEq('isGameOver', true), R.identity],
-    [checkMines(1, x, y), gameOver],
-    [R.when(checkTile(false, x, y), checkMines(0, x, y)), startSweep(x, y)],
-    [R.always, R.identity],
-  ]);
+  R.pipe(
+    R.cond([
+      [R.propEq('isGameOver', true), R.identity],
+      [R.propEq('isWin', true), R.identity],
+      [checkTile('flag', x, y), R.identity],
+      [checkMines(1, x, y), getIsGameOver],
+      [isSweepable(x, y), startSweep(x, y)],
+      [R.always, R.identity],
+    ]),
+    (args) => ({ ...args, isWin: getIsWin(args) })
+  );

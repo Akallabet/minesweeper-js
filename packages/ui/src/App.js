@@ -1,13 +1,12 @@
 import "./App.css";
 import { useState } from "react";
 import { flag, start, sweep } from "logic";
+import Tile from "./tile";
 
 function App() {
   const [game, setGame] = useState(start());
 
-  const onSweep = (x, y) => {
-    setGame(sweep(x, y)(game));
-  };
+  const onSweep = (x, y) => () => setGame(sweep(x, y)(game));
 
   const onFlag = (x, y) => (e) => {
     e.preventDefault();
@@ -16,16 +15,16 @@ function App() {
 
   const onReset = () => setGame(start());
 
-  const { field, minesMap, mines, isGameOver } = game;
-
-  console.log(field);
+  const { field, minesMap, mines, isGameOver, isWin } = game;
 
   return (
     <div className="App">
       <header className="App-header">Minesweeper</header>
       <div className="container">
         <header className="game-feedback">
-          {isGameOver ? <p>GAME OVER</p> : null}
+          {(isGameOver && <p>GAME OVER</p>) ||
+            (isWin && <p>Victory!</p>) ||
+            null}
         </header>
         <div className="game" style={{ width: "120px" }}>
           <div className="header">
@@ -38,32 +37,15 @@ function App() {
           <div className="board">
             {field.map((row, y) => (
               <div className="row" key={y}>
-                {row.map(
-                  (tile, x) =>
-                    (tile === 0 && (
-                      <p className="tile" key={x}>
-                        {tile}
-                      </p>
-                    )) ||
-                    (tile === 1 && (
-                      <p className="tile" key={x}>
-                        {tile}
-                      </p>
-                    )) ||
-                    (tile === false && (
-                      <button
-                        className="tile"
-                        key={x}
-                        onClick={() => onSweep(x, y)}
-                        onContextMenu={onFlag(x, y)}
-                        disabled={isGameOver}
-                      >
-                        {(isGameOver && minesMap[y][x] && "*") ||
-                          (tile === "flag" && "!") ||
-                          tile}
-                      </button>
-                    ))
-                )}
+                {row.map((tile, x) => (
+                  <Tile
+                    key={x}
+                    tile={(isGameOver && minesMap[y][x] && "*") || tile}
+                    disabled={isGameOver}
+                    onSweep={onSweep(x, y)}
+                    onFlag={onFlag(x, y)}
+                  />
+                ))}
               </div>
             ))}
           </div>

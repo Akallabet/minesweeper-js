@@ -165,4 +165,36 @@ describe('Game', () => {
     const { field } = R.pipe(sweep(2, 0))(start({ width: 4, height: 4, mines: 5, minesMap }));
     expect(field[0][2]).toBe(false);
   });
+
+  test('cannot sweep over a flag', () => {
+    const minesMap = [
+      [0, 0, 1, 0],
+      [0, 1, 0, 0],
+      [1, 0, 0, 0],
+      [0, 0, 0, 0],
+    ];
+    const { field } = R.pipe(
+      flag(2, 0),
+      sweep(2, 0)
+    )(start({ width: 4, height: 4, mines: 5, minesMap }));
+    expect(field[0][2]).toBe('flag');
+  });
+
+  test('wins the game if only the mines are left', () => {
+    const minesMap = [
+      [0, 0, 1, 0],
+      [0, 1, 0, 0],
+      [1, 0, 0, 0],
+      [0, 0, 0, 0],
+    ];
+    const { isWin } = R.pipe(
+      sweep(3, 3),
+      sweep(0, 0),
+      sweep(0, 1),
+      sweep(0, 3),
+      sweep(3, 0),
+      sweep(1, 0)
+    )(start({ width: 4, height: 4, mines: 3, minesMap }));
+    expect(isWin).toBe(true);
+  });
 });
