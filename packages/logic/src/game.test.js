@@ -1,8 +1,10 @@
 import * as R from 'ramda';
-import { start, flag, sweep } from './game';
+import sweep from './sweep';
+import start from './start';
+import flag from './flag';
 
-const getInitialRow = (width = 8) => [...new Array(width)].map(() => false);
-const getInitialMineField = (width = 8, height = 8) =>
+const getInitialRow = (width = 9) => [...new Array(width)].map(() => false);
+const getInitialMineField = (width = 9, height = 9) =>
   [...new Array(height)].map(() => getInitialRow(width));
 
 describe('Game', () => {
@@ -33,25 +35,25 @@ describe('Game', () => {
 
     expect(field[5][5]).toEqual('flag');
     expect(field[0]).toEqual(getInitialRow());
-    expect(mines).toEqual(9);
+    expect(mines).toEqual(7);
   });
 
   test('it should remove a flag from a tile', () => {
-    const game = flag(5, 5)(start());
-    const { field, mines } = flag(5, 5)(game);
+    const game = flag(4, 4)(start());
+    const { field, mines } = flag(4, 4)(game);
 
-    expect(field[5][5]).toEqual(false);
+    expect(field[4][4]).toEqual(false);
     expect(field[0]).toEqual(getInitialRow());
-    expect(mines).toEqual(10);
+    expect(mines).toEqual(8);
   });
 
   test('adds or removes a flag', () => {
-    const { field, mines } = R.pipe(flag(5, 5), flag(1, 2), flag(3, 3), flag(5, 5))(start());
+    const { field, mines } = R.pipe(flag(4, 4), flag(1, 2), flag(3, 3), flag(4, 4))(start());
 
-    expect(field[5][5]).toEqual(false);
+    expect(field[4][4]).toEqual(false);
     expect(field[2][1]).toEqual('flag');
     expect(field[3][3]).toEqual('flag');
-    expect(mines).toEqual(8);
+    expect(mines).toEqual(6);
   });
 
   test('add 0 if there are no mines nearby', () => {
