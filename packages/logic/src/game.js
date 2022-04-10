@@ -43,12 +43,27 @@ const addFlagAndRemoveMine =
 
 const getRandomInt = (max) => Math.floor(Math.random() * max);
 
-const createMinesMap = (width, height, mines) => {
-  const minePositions = R.map(
-    () => [getRandomInt(height), getRandomInt(width)],
-    [...new Array(mines)]
-  );
+const generateMinesPositions = (width, height, mines, positions = {}) => {
+  if (mines === 0) {
+    return R.reduce(
+      (list, position) => [
+        ...list,
+        [Number(position.split('-')[0]), Number(position.split('-')[1])],
+      ],
+      [],
+      R.keys(positions)
+    );
+  }
+  const position = `${getRandomInt(height)}-${getRandomInt(width)}`;
+  if (!positions[position])
+    return generateMinesPositions(width, height, mines - 1, { ...positions, [position]: true });
+  if (positions[position]) return generateMinesPositions(width, height, mines, positions);
+};
+
+export const createMinesMap = (width, height, mines) => {
   const minesMap = createEmptyField({ width, height }, 0);
+  const minePositions = generateMinesPositions(width, height, mines);
+
   R.forEach(([y, x]) => (minesMap[y][x] = 1), minePositions);
   return minesMap;
 };
@@ -139,7 +154,8 @@ const getLengthOfEq = (arg, prop) =>
   R.pipe(R.prop(prop), R.flatten, R.filter(R.equals(arg)), R.length);
 
 const getIsWin = (args) =>
-  getLengthOfEq(false, 'field')(args) === getLengthOfEq(1, 'minesMap')(args);
+  getLengthOfEq('flag', 'field')(args) + getLengthOfEq(false, 'field')(args) ===
+  getLengthOfEq(1, 'minesMap')(args);
 
 export const sweep = (x, y) =>
   R.pipe(
