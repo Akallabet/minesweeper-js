@@ -5,6 +5,7 @@ p {
 .container {
   padding: 20px;
 }
+
 .game .header {
   display: flex;
   margin-bottom: 10px;
