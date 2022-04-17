@@ -2,12 +2,6 @@ import { useEffect, useState } from "react";
 import { flag, start, sweep, levels } from "logic";
 import Tile from "./tile";
 
-const gameWidths = {
-  beginner: 120,
-  intermediate: 240,
-  expert: 450,
-};
-
 const Game = ({ level = "beginner" }) => {
   const gameLevel = levels.find(([gameLevel]) => gameLevel === level)[1];
 
@@ -26,14 +20,18 @@ const Game = ({ level = "beginner" }) => {
 
   const onReset = () => setGame(start(gameLevel));
 
-  const { field, minesMap, mines, isGameOver, isWin } = game;
+  const { field, minesMap, mines, isGameOver, isWin, columns } = game;
+
+  const tileWidth = 16;
+
+  const width = tileWidth * columns;
 
   return (
     <>
       <header className="game-feedback">
         {(isGameOver && <p>GAME OVER</p>) || (isWin && <p>Victory!</p>) || null}
       </header>
-      <div className="game" style={{ width: `${gameWidths[level]}px` }}>
+      <div className="game" style={{ width: `${width}px` }}>
         <div className="header">
           <div>
             <span>Mines: </span>

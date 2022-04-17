@@ -1,14 +1,14 @@
 import * as R from 'ramda';
 
-export const createEmptyField = R.curry(({ width = 8, height = 8 }, value) =>
-  R.map(() => R.map(() => value, [...new Array(width)]), [...new Array(height)])
+export const createEmptyField = R.curry(({ columns = 8, rows = 8 }, value) =>
+  R.map(() => R.map(() => value, [...new Array(columns)]), [...new Array(rows)])
 );
 
-const defaultEasy = { width: 9, height: 9, mines: 8 };
+const defaultEasy = { columns: 9, rows: 9, mines: 8 };
 
-export const mapDefaultArgs = ({ width = 8, height = 8, mines = 10, minesMap } = defaultEasy) => ({
-  width,
-  height,
+export const mapDefaultArgs = ({ columns = 8, rows = 8, mines = 10, minesMap } = defaultEasy) => ({
+  columns,
+  rows,
   mines,
   minesMap,
 });

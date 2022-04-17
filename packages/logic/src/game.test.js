@@ -3,9 +3,9 @@ import sweep from './sweep';
 import start from './start';
 import flag from './flag';
 
-const getInitialRow = (width = 9) => [...new Array(width)].map(() => false);
-const getInitialMineField = (width = 9, height = 9) =>
-  [...new Array(height)].map(() => getInitialRow(width));
+const getInitialRow = (columns = 9) => [...new Array(columns)].map(() => false);
+const getInitialMineField = (columns = 9, rows = 9) =>
+  [...new Array(rows)].map(() => getInitialRow(columns));
 
 describe('Game', () => {
   test('start a game', () => {
@@ -20,13 +20,13 @@ describe('Game', () => {
     expect(field).toEqual(getInitialMineField());
   });
 
-  test('it returns an unchecked minefield width custom width and height', () => {
-    const width = 10;
-    const height = 12;
-    const game = start({ width, height });
+  test('it returns an unchecked minefield with custom columns and rows', () => {
+    const columns = 10;
+    const rows = 12;
+    const game = start({ columns, rows });
     const { field, mines } = game;
 
-    expect(field).toEqual(getInitialMineField(width, height));
+    expect(field).toEqual(getInitialMineField(columns, rows));
     expect(mines).toEqual(10);
   });
 
@@ -63,7 +63,7 @@ describe('Game', () => {
       [0, 0, 1],
     ];
 
-    const { field } = R.pipe(sweep(0, 1))(start({ width: 3, height: 3, mines: 2, minesMap }));
+    const { field } = R.pipe(sweep(0, 1))(start({ columns: 3, rows: 3, mines: 2, minesMap }));
     expect(field[1][0]).toEqual(0);
   });
 
@@ -74,7 +74,7 @@ describe('Game', () => {
       [0, 0, 1],
     ];
 
-    const { field } = R.pipe(sweep(1, 0))(start({ width: 3, height: 3, mines: 2, minesMap }));
+    const { field } = R.pipe(sweep(1, 0))(start({ columns: 3, rows: 3, mines: 2, minesMap }));
     expect(field[0][1]).toEqual(1);
   });
 
@@ -85,7 +85,7 @@ describe('Game', () => {
       [0, 0, 1],
     ];
 
-    const { field } = R.pipe(sweep(1, 1))(start({ width: 3, height: 3, mines: 2, minesMap }));
+    const { field } = R.pipe(sweep(1, 1))(start({ columns: 3, rows: 3, mines: 2, minesMap }));
     expect(field[1][1]).toEqual(2);
   });
 
@@ -95,7 +95,7 @@ describe('Game', () => {
       [0, 0, 0],
       [0, 0, 1],
     ];
-    const { field } = R.pipe(sweep(0, 1))(start({ width: 3, height: 3, mines: 2, minesMap }));
+    const { field } = R.pipe(sweep(0, 1))(start({ columns: 3, rows: 3, mines: 2, minesMap }));
 
     expect(field[1][0]).toEqual(0);
     expect(field).toEqual([
@@ -115,7 +115,7 @@ describe('Game', () => {
     const { field } = R.pipe(
       sweep(0, 0),
       sweep(3, 2)
-    )(start({ width: 4, height: 4, mines: 5, minesMap }));
+    )(start({ columns: 4, rows: 4, mines: 5, minesMap }));
 
     expect(field[0][0]).toEqual(1);
     expect(field[1][0]).toEqual(false);
@@ -139,7 +139,7 @@ describe('Game', () => {
       [1, 0, 0, 0],
       [0, 0, 0, 0],
     ];
-    const { isGameOver } = R.pipe(sweep(2, 0))(start({ width: 4, height: 4, mines: 5, minesMap }));
+    const { isGameOver } = R.pipe(sweep(2, 0))(start({ columns: 4, rows: 4, mines: 5, minesMap }));
     expect(isGameOver).toBe(true);
   });
 
@@ -153,7 +153,7 @@ describe('Game', () => {
     const { field } = R.pipe(
       sweep(2, 0),
       flag(2, 0)
-    )(start({ width: 4, height: 4, mines: 5, minesMap }));
+    )(start({ columns: 4, rows: 4, mines: 5, minesMap }));
     expect(field[0][2]).toBe(false);
   });
 
@@ -164,7 +164,7 @@ describe('Game', () => {
       [1, 0, 0, 0],
       [0, 0, 0, 0],
     ];
-    const { field } = R.pipe(sweep(2, 0))(start({ width: 4, height: 4, mines: 5, minesMap }));
+    const { field } = R.pipe(sweep(2, 0))(start({ columns: 4, rows: 4, mines: 5, minesMap }));
     expect(field[0][2]).toBe(false);
   });
 
@@ -178,7 +178,7 @@ describe('Game', () => {
     const { field } = R.pipe(
       flag(2, 0),
       sweep(2, 0)
-    )(start({ width: 4, height: 4, mines: 5, minesMap }));
+    )(start({ columns: 4, rows: 4, mines: 5, minesMap }));
     expect(field[0][2]).toBe('flag');
   });
 
@@ -196,7 +196,7 @@ describe('Game', () => {
       sweep(0, 3),
       sweep(3, 0),
       sweep(1, 0)
-    )(start({ width: 4, height: 4, mines: 3, minesMap }));
+    )(start({ columns: 4, rows: 4, mines: 3, minesMap }));
     expect(isWin).toBe(true);
   });
 });
