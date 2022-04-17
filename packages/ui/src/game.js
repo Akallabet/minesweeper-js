@@ -1,15 +1,11 @@
-import { useEffect, useState } from "react";
 import { flag, start, sweep, levels } from "logic";
 import Tile from "./tile";
+import useGame from "./use-game";
 
 const Game = ({ level = "beginner" }) => {
+  const [game = {}, setGame] = useGame(level);
+
   const gameLevel = levels.find(([gameLevel]) => gameLevel === level)[1];
-
-  const [game, setGame] = useState(start(gameLevel));
-
-  useEffect(() => {
-    setGame(start(gameLevel));
-  }, [gameLevel]);
 
   const onSweep = (x, y) => () => setGame(sweep(x, y)(game));
 
@@ -20,7 +16,7 @@ const Game = ({ level = "beginner" }) => {
 
   const onReset = () => setGame(start(gameLevel));
 
-  const { field, minesMap, mines, isGameOver, isWin, columns } = game;
+  const { field = [], minesMap, mines, isGameOver, isWin, columns = 0 } = game;
 
   const tileWidth = 16;
 

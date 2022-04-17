@@ -1,5 +1,14 @@
 import * as R from 'ramda';
-import { mapDefaultArgs, createEmptyField } from './common';
+import { createEmptyField } from './common';
+
+const defaultEasy = { columns: 9, rows: 9, mines: 8 };
+
+const mapDefaultArgs = ({ columns = 8, rows = 8, mines = 10, ...rest } = defaultEasy) => ({
+  columns,
+  rows,
+  mines,
+  ...rest,
+});
 
 const getRandomInt = (max) => Math.floor(Math.random() * max);
 
@@ -20,7 +29,7 @@ const generateMinesPositions = (columns, rows, mines, positions = {}) => {
   if (positions[position]) return generateMinesPositions(columns, rows, mines, positions);
 };
 
-const createMinesMap = (columns, rows, mines) => {
+const createMinesMap = ({ columns, rows, mines }) => {
   const minesMap = createEmptyField({ columns, rows }, 0);
   const minePositions = generateMinesPositions(columns, rows, mines);
 
@@ -30,15 +39,14 @@ const createMinesMap = (columns, rows, mines) => {
 
 const start = R.pipe(
   mapDefaultArgs,
-  (args) => [createEmptyField(args, false), args],
-  ([field, { mines, minesMap, columns, rows, ...rest }]) => ({
-    field,
-    mines,
-    columns,
-    rows,
-    minesMap: minesMap || createMinesMap(columns, rows, mines),
-    ...rest,
-  })
+  R.cond([
+    [R.prop('field'), R.identity],
+    [R.always, (args) => ({ field: createEmptyField(args, false), ...args })],
+  ]),
+  R.cond([
+    [R.prop('minesMap'), R.identity],
+    [R.always, (args) => ({ minesMap: createMinesMap(args), ...args })],
+  ])
 );
 
 export default start;

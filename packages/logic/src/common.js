@@ -1,16 +1,8 @@
 import * as R from 'ramda';
 
-export const createEmptyField = R.curry(({ columns = 8, rows = 8 }, value) =>
-  R.map(() => R.map(() => value, [...new Array(columns)]), [...new Array(rows)])
-);
-
-const defaultEasy = { columns: 9, rows: 9, mines: 8 };
-
-export const mapDefaultArgs = ({ columns = 8, rows = 8, mines = 10, minesMap } = defaultEasy) => ({
-  columns,
-  rows,
-  mines,
-  minesMap,
+export const createEmptyField = R.curry(({ columns = 8, rows = 8 }, value) => {
+  // console.log('lalalal');
+  return R.map(() => R.map(() => value, [...new Array(columns)]), [...new Array(rows)]);
 });
 
 export const checkField = R.curryN(4)((arg, x, y, field) => field[y] && field[y][x] === arg);
