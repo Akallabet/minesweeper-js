@@ -21,7 +21,7 @@
   "bugs": {
     "url": "https://github.com/Akallabet/minesweeper-js/issues"
   },
-  "homepage": "https://github.com/Akallabet/minesweeper-js#readme",
+  "homepage": ".",
   "devDependencies": {
     "@babel/core": "^7.17.8",
     "@babel/preset-env": "^7.16.11",
