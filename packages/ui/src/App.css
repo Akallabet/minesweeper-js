@@ -13,8 +13,32 @@ a.selected {
 }
 
 header {
-  width: 300px;
+  width: 600px;
   text-align: center;
+}
+
+footer {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  padding-bottom: 20px;
+}
+
+footer > section {
+  display: flex;
+  width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  justify-content: space-between;
+}
+
+footer > section span {
+  margin-right: 5px;
+}
+
+footer a {
+  font-weight: normal;
 }
 
 .app {

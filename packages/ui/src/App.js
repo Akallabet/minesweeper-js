@@ -27,6 +27,15 @@ const App = () => (
         <Route path="/levels/:level" element={<GameRoute />} />
       </Routes>
     </div>
+    <footer>
+      <section>
+        <p>
+          <span>Made by</span>
+          <a href="https://github.com/Akallabet">Akallabet</a>
+        </p>
+        <a href="https://github.com/Akallabet/minesweeper-js">Github Repo</a>
+      </section>
+    </footer>
   </div>
 );
 
