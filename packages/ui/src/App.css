@@ -3,8 +3,27 @@ p {
   padding: 0;
 }
 
-.container {
+a {
+  color: #00007b;
+  font-weight: bold;
+}
+
+a.selected {
+  text-decoration: none;
+}
+
+header {
+  width: 300px;
+  text-align: center;
+}
+
+.app {
   padding: 20px;
+}
+
+.app-header {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .game .header {
@@ -20,6 +39,11 @@ p {
 .game-feedback p {
   padding: 0;
   margin: 0;
+}
+
+.game {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .game .board {
