@@ -4,6 +4,7 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
+    "test:ci": "npm run test:ci --workspace=logic",
     "test": "npm run test --workspace=logic",
     "start": "npm run start --workspace=ui",
     "build": "npm run build --workspace=ui"
