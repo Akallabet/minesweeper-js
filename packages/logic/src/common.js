@@ -1,7 +1,6 @@
 import * as R from 'ramda';
 
 export const createEmptyField = R.curry(({ columns = 8, rows = 8 }, value) => {
-  // console.log('lalalal');
   return R.map(() => R.map(() => value, [...new Array(columns)]), [...new Array(rows)]);
 });
 

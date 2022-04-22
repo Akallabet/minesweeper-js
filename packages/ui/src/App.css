@@ -15,19 +15,20 @@ a.selected {
 header {
   width: 600px;
   text-align: center;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 footer {
   position: fixed;
   width: 100%;
   bottom: 0;
-  left: 0;
-  padding-bottom: 20px;
 }
 
 footer > section {
   display: flex;
-  width: 600px;
+  max-width: 600px;
+  padding: 20px;
   margin-left: auto;
   margin-right: auto;
   justify-content: space-between;
@@ -41,15 +42,6 @@ footer a {
   font-weight: normal;
 }
 
-.app {
-  padding: 20px;
-}
-
-.app-header {
-  margin-left: auto;
-  margin-right: auto;
-}
-
 .game .header {
   display: flex;
   margin-bottom: 10px;
@@ -58,11 +50,16 @@ footer a {
 
 .game-feedback {
   height: 60px;
+  width: 600px;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .game-feedback p {
   padding: 0;
   margin: 0;
+  line-height: 60px;
 }
 
 .game {

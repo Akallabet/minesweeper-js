@@ -6,8 +6,8 @@ import GameRoute from "./game-route";
 import Levels from "./levels";
 
 const App = () => (
-  <div className="app">
-    <header className="app-header">
+  <>
+    <header>
       <h1>Minesweeper</h1>
     </header>
     <div className="container">
@@ -36,7 +36,7 @@ const App = () => (
         <a href="https://github.com/Akallabet/minesweeper-js">Github Repo</a>
       </section>
     </footer>
-  </div>
+  </>
 );
 
 export default App;
