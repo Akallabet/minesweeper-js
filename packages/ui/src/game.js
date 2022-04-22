@@ -27,11 +27,11 @@ const Game = ({ level = "beginner" }) => {
       </div>
       <div className="game" style={{ width: `${width}px` }}>
         <div className="header">
-          <div>
+          <div className="mines">
             <span>{mines}</span>
           </div>
           <button onClick={resetGame}>reset</button>
-          <div>
+          <div className="time">
             <span>{time}</span>
           </div>
         </div>

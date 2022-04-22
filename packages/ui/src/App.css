@@ -48,6 +48,16 @@ footer a {
   justify-content: space-between;
 }
 
+.game .mines {
+  width: 30px;
+  text-align: left;
+}
+
+.game .time {
+  width: 30px;
+  text-align: right;
+}
+
 .game-feedback {
   height: 60px;
   width: 600px;
